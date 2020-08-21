@@ -5,13 +5,7 @@
 
 class Status {
 public:
-	std::string to_string() {
-		if (code == cOK) {
-			return "OK";
-		} else {
-			return "Error: " + message1 + " - " + message2;
-		}
-	}
+	std::string to_string();
 
 	static Status OK() { return Status(); }
 	static Status Error() { return Status(cERROR, "ERROR", "Error occurred"); }

@@ -1,5 +1,2 @@
-/CMakeFiles
-CMakeCache.txt
-cmake_install.cmake
-executeTests
-Makefile
+/build
+/.vscode
