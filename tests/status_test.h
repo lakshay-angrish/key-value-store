@@ -1,5 +1,4 @@
-#include <status.h>
-
+#include "status.h"
 #include <gtest/gtest.h>
 
 TEST(StatusTest, Constructor) {
@@ -24,9 +23,4 @@ TEST(StatusTest, to_string) {
 		Status e = Status::Error();
 		EXPECT_EQ("Error: ERROR - Error occurred", e.to_string());
 	}
-}
-
-int main(int argc, char* argv[]) {
-	testing::InitGoogleTest(&argc, argv);
-	return	RUN_ALL_TESTS();
 }

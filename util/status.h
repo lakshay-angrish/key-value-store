@@ -8,7 +8,7 @@ public:
 	std::string to_string();
 
 	static Status OK() { return Status(); }
-	static Status Error() { return Status(cERROR, "ERROR", "Error occurred"); }
+	static Status Error(std::string msg = "Error occurred") { return Status(cERROR, "ERROR", msg); }
 
 	operator bool() const { return code == cOK; }
 
