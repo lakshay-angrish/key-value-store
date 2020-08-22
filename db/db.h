@@ -21,6 +21,8 @@ public:
 	Status open(const char*);
 	Status close();
 
+	Status get(const char*, std::string*);
+
 private:
 	std::fstream file;
 	std::map<std::string, std::string> hash_map;

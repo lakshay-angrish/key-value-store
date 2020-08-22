@@ -34,3 +34,16 @@ Status HashDB::close() {
 		return Status::Error("Error closing DB");
 	}
 }
+
+Status HashDB::get(const char* key, std::string* value) {
+	if (file.is_open()) {
+		if (hash_map.find(key) != hash_map.end()) {
+			*value = hash_map[key];
+			return Status::OK();
+		} else {
+			return Status::Error("Key not found");
+		}
+	} else {
+		return Status::Error("DB not opened");
+	}
+}
