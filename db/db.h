@@ -14,18 +14,22 @@ public:
 	~HashDB() {
 		Status s = this->close();
 		if (!s) {
-			std::cout << s.to_string() << '\n';
+			exit(1);
 		}
 	}
 
-	Status open(const char*);
+	Status open(std::string);
 	Status close();
 
-	Status get(const char*, std::string*);
+	Status get(std::string, std::string*);
+	Status put(std::string, std::string);
 
 private:
+	std::string db_path;
 	std::fstream file;
 	std::map<std::string, std::string> hash_map;
+
+	Status write_to_file();
 };
 
 #endif
