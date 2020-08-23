@@ -23,6 +23,7 @@ public:
 
 	Status get(std::string, std::string*);
 	Status put(std::string, std::string);
+	Status erase(std::string);
 
 private:
 	std::string db_path;

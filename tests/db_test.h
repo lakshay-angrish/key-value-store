@@ -43,9 +43,11 @@ TEST(HashDB, put) {
 		db.open("test_db.txt");
 		Status s = db.put("WITCH", "Freya");
 		ASSERT_TRUE(s) << s.to_string();
+
 		std::string val;
 		db.get("WITCH", &val);
 		EXPECT_EQ("Freya", val);
+
 		s = db.close();
 		ASSERT_TRUE(s) << s.to_string();
 	}
@@ -55,8 +57,26 @@ TEST(HashDB, put) {
 		std::string val;
 		Status s = db.get("WITCH", &val);
 		ASSERT_TRUE(s) << s.to_string();
+
 		EXPECT_EQ("Freya", val);
+
 		s = db.close();
 		ASSERT_TRUE(s) << s.to_string();
 	}
+}
+
+TEST(HashDB, erase) {
+	HashDB db;
+	db.open("test_db.txt");
+	Status s = db.erase("BOY");
+	ASSERT_TRUE(s) << s.to_string();
+
+	std::string val;
+	s = db.get("BOY", &val);
+	ASSERT_TRUE(!s);
+
+	EXPECT_EQ("Error: ERROR - Key not found", s.to_string());
+
+	s = db.close();
+	ASSERT_TRUE(s) << s.to_string();
 }

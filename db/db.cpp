@@ -78,3 +78,12 @@ Status HashDB::write_to_file() {
 		return Status::Error(e.what());
 	}
 }
+
+Status HashDB::erase(std::string key) {
+	if (file.is_open()) {
+		hash_map.erase(key);
+		return Status::OK();
+	} else {
+		return Status::Error("DB not opened");
+	}
+}
