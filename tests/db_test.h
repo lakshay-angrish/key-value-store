@@ -80,3 +80,22 @@ TEST(HashDB, erase) {
 	s = db.close();
 	ASSERT_TRUE(s) << s.to_string();
 }
+
+TEST(HashDB, iteration) {
+	HashDB db;
+	db.open("test_db.txt");
+
+	HashDB::iterator it = db.begin();
+	EXPECT_EQ("GOW", it->first);
+	EXPECT_EQ("Kratos", it->second);
+
+	it++;
+	EXPECT_EQ("WITCH", it->first);
+	EXPECT_EQ("Freya", it->second);
+
+	it++;
+	ASSERT_TRUE(it == db.end());
+
+	Status s = db.close();
+	ASSERT_TRUE(s) << s.to_string();
+}

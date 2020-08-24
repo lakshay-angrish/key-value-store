@@ -10,6 +10,8 @@
 
 class HashDB {
 public:
+	typedef std::map<std::string, std::string>::const_iterator iterator;
+
 	HashDB(): file(NULL) {}
 	~HashDB() {
 		Status s = this->close();
@@ -24,6 +26,9 @@ public:
 	Status get(std::string, std::string*);
 	Status put(std::string, std::string);
 	Status erase(std::string);
+
+	iterator begin() const { return std::cbegin(hash_map); }
+	iterator end() const { return std::cend(hash_map); }
 
 private:
 	std::string db_path;
