@@ -3,14 +3,14 @@
 
 #include <status.h>
 #include <fstream>
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <iostream>
 #include <algorithm>
 
 class HashDB {
 public:
-	typedef std::map<std::string, std::string>::const_iterator iterator;
+	typedef std::unordered_map<std::string, std::string>::const_iterator iterator;
 
 	HashDB(): file(NULL) {}
 	~HashDB() {
@@ -33,7 +33,7 @@ public:
 private:
 	std::string db_path;
 	std::fstream file;
-	std::map<std::string, std::string> hash_map;
+	std::unordered_map<std::string, std::string> hash_map;
 
 	Status write_to_file();
 };
