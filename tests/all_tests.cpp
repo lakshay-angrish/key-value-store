@@ -3,6 +3,7 @@
 
 #include "status_test.h"
 #include "db_test.h"
+#include "hash_table_test.h"
 
 int main(int argc, char* argv[]) {
 	std::ofstream file("test_db.txt", std::ios::trunc);

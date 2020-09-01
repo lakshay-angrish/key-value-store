@@ -64,32 +64,3 @@ TEST(HashDB, put) {
 		ASSERT_TRUE(s) << s.to_string();
 	}
 }
-
-TEST(HashDB, erase) {
-	HashDB db;
-	db.open("test_db.txt");
-	Status s = db.erase("BOY");
-	ASSERT_TRUE(s) << s.to_string();
-
-	std::string val;
-	s = db.get("BOY", &val);
-	ASSERT_TRUE(!s);
-
-	EXPECT_EQ("Error: ERROR - Key not found", s.to_string());
-
-	s = db.close();
-	ASSERT_TRUE(s) << s.to_string();
-}
-
-TEST(HashDB, iteration) {
-	HashDB db;
-	db.open("test_db.txt");
-
-	HashDB::iterator it = db.begin();
-	it++;
-	it++;
-	ASSERT_TRUE(it == db.end());
-
-	Status s = db.close();
-	ASSERT_TRUE(s) << s.to_string();
-}
