@@ -22,7 +22,9 @@ public:
 	Status get(std::string, std::string*);
 	Status put(std::string, std::string);
 
-	const int OFFSET_FROM_HEADER = 10;
+	int OFFSET_FROM_HEADER = 10;
+	int BUCKET_SIZE = 22;
+	int NUMBER_OF_BUCKETS = 5;
 
 private:
 	std::string db_path;
