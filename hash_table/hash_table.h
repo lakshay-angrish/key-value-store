@@ -1,7 +1,8 @@
 #ifndef HASH_TABLE
 #define HASH_TABLE
 
-#include <status.h>
+#include "status.h"
+#include "MurmurHash3.h"
 
 #include <fstream>
 #include <string>
@@ -16,16 +17,17 @@ public:
 
 	std::size_t file_size();
 
-	static int hash(std::string);
+	static unsigned int hash(std::string);
 
 	Status initialize_new_db();
 
 	Status get(std::string, std::string*);
 	Status put(std::string, std::string);
 
-	int OFFSET_FROM_HEADER = 10;
-	int BUCKET_SIZE = 22;
-	int NUMBER_OF_BUCKETS = 5;
+	unsigned int OFFSET_FROM_HEADER = 10;
+	unsigned int BUCKET_SIZE = 22;
+	unsigned int NUMBER_OF_BUCKETS = 1000;
+	std::size_t FILE_SIZE = NUMBER_OF_BUCKETS * BUCKET_SIZE + OFFSET_FROM_HEADER + 3;
 
 private:
 	std::string db_path;

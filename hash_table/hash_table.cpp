@@ -1,6 +1,7 @@
 #include "hash_table.h"
 
 #include <algorithm>
+#include <cmath>
 
 Status HashTable::create(std::string db_path) {
 	this->db_path = db_path;
@@ -71,7 +72,7 @@ Status HashTable::initialize_new_db() {
 
 	try {
 		//add file header that tells the number of buckets in the hash table
-		file << NUMBER_OF_BUCKETS << std::string(8, ' ') << '\n';
+		file << NUMBER_OF_BUCKETS << std::string(9 - std::floor(std::log10(NUMBER_OF_BUCKETS) + 1), ' ') << '\n';
 
 		for (int i = 0; i != NUMBER_OF_BUCKETS; i++) {
 			file << "0" << '\n';						//0-> bucket is taken, 1-> empty bucket
@@ -87,11 +88,9 @@ Status HashTable::initialize_new_db() {
 	return Status::OK();
 }
 
-int HashTable::hash(std::string key) {
-	//basic hash to be replaced later
-	int h = 0;
-	for (std::string::size_type i = 0; i != key.size(); i++)
-		h += int(key[i]) * (i + 1);
+unsigned int HashTable::hash(std::string key) {
+	unsigned int h;
+	MurmurHash3_x86_32(key.c_str(), key.size(), 1, &h);
 
 	return h;
 }

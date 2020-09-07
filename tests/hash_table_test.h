@@ -6,7 +6,7 @@ TEST(HashTable, open_close) {
 	Status s = h.create("test_table.dat");
 	ASSERT_TRUE(s) << s.to_string();
 
-	EXPECT_EQ(123, h.file_size());
+	EXPECT_EQ(h.FILE_SIZE, h.file_size());
 
 	s = h.remove_table();
 	ASSERT_TRUE(s) << s.to_string();
@@ -14,7 +14,7 @@ TEST(HashTable, open_close) {
 
 TEST(HashTable, hash_function) {
 	std::string key = "abc";
-	int expected_hash = 590;
+	unsigned int expected_hash = 2859854335;
 
 	EXPECT_EQ(expected_hash, HashTable::hash(key));
 }
@@ -26,7 +26,7 @@ TEST(HashTable, put_get) {
 	{
 		Status s = h.put("abc", "123");
 		ASSERT_TRUE(s) << s.to_string();
-		EXPECT_EQ(123, h.file_size());
+		EXPECT_EQ(h.FILE_SIZE, h.file_size());
 
 		s = h.put("abc", "124");
 		ASSERT_TRUE(!s);
@@ -40,13 +40,9 @@ TEST(HashTable, put_get) {
 		ASSERT_TRUE(!s);
 		EXPECT_EQ("Error: ERROR - Key/Value Size Must be <= 10.", s.to_string());
 
-		s = h.put("6", "abcd");
+		s = h.put("6666666", "abcd");
 		ASSERT_TRUE(s) << s.to_string();
-		EXPECT_EQ(123, h.file_size());
-
-		s = h.put("123", "123");
-		ASSERT_TRUE(s) << s.to_string();
-		EXPECT_EQ(123, h.file_size());
+		EXPECT_EQ(h.FILE_SIZE, h.file_size());
 	}
 
 	{
@@ -55,7 +51,7 @@ TEST(HashTable, put_get) {
 		ASSERT_TRUE(s) << s.to_string();
 		EXPECT_EQ("123", value);
 
-		s = h.get("6", &value);
+		s = h.get("6666666", &value);
 		ASSERT_TRUE(s) << s.to_string();
 		EXPECT_EQ("abcd", value);
 
