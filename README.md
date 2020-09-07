@@ -1,8 +1,9 @@
 # key-value-store
-A Key-Value store written in C++
+An On-Disk(Persistent) Key-Value store written in C++
 
 ## Running Tests
 The project uses the googletest testing framework
+
 cd to the cloned repo and run:
 ```shell
 mkdir build
