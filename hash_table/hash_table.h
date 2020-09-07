@@ -11,6 +11,7 @@ public:
 	HashTable(): file(NULL) {}
 
 	Status create(std::string);
+	Status close();
 	Status remove_table();
 
 	std::size_t file_size();

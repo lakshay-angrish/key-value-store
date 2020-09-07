@@ -1,37 +1,31 @@
 #ifndef DB_H
 #define DB_H
 
-#include <status.h>
+#include "status.h"
+#include "hash_table.h"
+
 #include <fstream>
-#include <unordered_map>
 #include <string>
 #include <iostream>
-#include <algorithm>
 
 class HashDB {
 public:
-	typedef std::unordered_map<std::string, std::string>::const_iterator iterator;
-
-	HashDB(): file(NULL) {}
+	HashDB() {}
 	~HashDB() {
 		Status s = this->close();
 		if (!s) {
-			exit(1);
+			std::cerr << s.to_string() << std::endl;
 		}
 	}
 
-	Status open(std::string);
-	Status close();
+	Status open(std::string db_path) { return hash_map.create(db_path); }
+	Status close() { return hash_map.close(); }
 
-	Status get(std::string, std::string*);
-	Status put(std::string, std::string);
+	Status get(std::string key, std::string* value) { return hash_map.get(key, value); }
+	Status put(std::string key, std::string value) { return hash_map.put(key, value); }
 
 private:
-	std::string db_path;
-	std::fstream file;
-	std::unordered_map<std::string, std::string> hash_map;
-
-	Status write_to_file();
+	HashTable hash_map;
 };
 
 #endif

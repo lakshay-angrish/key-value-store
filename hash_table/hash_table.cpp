@@ -32,6 +32,19 @@ Status HashTable::create(std::string db_path) {
 	return Status::OK();
 }
 
+Status HashTable::close() {
+	try {
+		if (file.is_open()) {
+			file.close();
+		}
+		this->db_path.clear();
+		return Status::OK();
+
+	} catch (std::exception e) {
+		return Status::Error("Error closing DB");
+	}
+}
+
 Status HashTable::remove_table() {
 	try {
 		remove(db_path.c_str());
