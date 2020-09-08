@@ -72,12 +72,12 @@ Status HashTable::initialize_new_db() {
 
 	try {
 		//add file header that tells the number of buckets in the hash table
-		file << NUMBER_OF_BUCKETS << std::string(9 - std::floor(std::log10(NUMBER_OF_BUCKETS) + 1), ' ') << '\n';
+		file << NUMBER_OF_BUCKETS << std::string(FIELD_WIDTH - std::floor(std::log10(NUMBER_OF_BUCKETS) + 1), ' ') << '\n';
 
 		for (int i = 0; i != NUMBER_OF_BUCKETS; i++) {
 			file << "0" << '\n';						//0-> bucket is taken, 1-> empty bucket
-			file << std::string(9, ' ') << '\n';		//reserving space for a key of upto 9 bytes;
-			file << std::string(9, ' ') << '\n';		//reserving space for value
+			file << std::string(FIELD_WIDTH, ' ') << '\n';		//reserving space for a key of upto 9 bytes;
+			file << std::string(FIELD_WIDTH, ' ') << '\n';		//reserving space for value
 		}
 
 		file << "END";									//footer for end of file
@@ -99,12 +99,12 @@ Status HashTable::put(std::string key, std::string value) {
 	if (!file.is_open())
 		return Status::Error("DB not opened.");
 
-	if (key.size() > 9 || value.size() > 9)
+	if (key.size() > FIELD_WIDTH || value.size() > FIELD_WIDTH)
 		return Status::Error("Key/Value Size Must be <= 10.");
 
 	try {
 		int bucket_allotted = HashTable::hash(key) % NUMBER_OF_BUCKETS;
-		int position_in_file = OFFSET_FROM_HEADER + bucket_allotted * BUCKET_SIZE;
+		int position_in_file = OFFSET_FROM_HEADER + bucket_allotted * bucket_size();
 
 		file.seekg(position_in_file, std::ios::beg);
 
@@ -119,7 +119,7 @@ Status HashTable::put(std::string key, std::string value) {
 		file.seekg(file.tellg(), std::ios::beg);
 
 		file << key;				//write the key
-		file.seekp(10 - key.size(), std::ios::cur);			//move to the next line
+		file.seekp(FIELD_WIDTH + 1 - key.size(), std::ios::cur);			//move to the next line
 
 		file << value;
 
@@ -134,12 +134,12 @@ Status HashTable::get(std::string key, std::string* value) {
 	if (!file.is_open())
 		return Status::Error("DB not opened.");
 
-	if (key.size() > 9)
-		return Status::Error("Key/Value Size Must be <= 10.");
+	if (key.size() > FIELD_WIDTH)
+		return Status::Error("Key/Value Size Must be <= " + std::to_string(FIELD_WIDTH + 1) + ".");
 
 	try {
 		int bucket_allotted = HashTable::hash(key) % NUMBER_OF_BUCKETS;
-		int position_in_file = OFFSET_FROM_HEADER + bucket_allotted * BUCKET_SIZE;
+		int position_in_file = OFFSET_FROM_HEADER + bucket_allotted * bucket_size();
 
 		file.seekg(position_in_file, std::ios::beg);
 

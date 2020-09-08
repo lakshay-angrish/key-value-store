@@ -16,6 +16,7 @@ public:
 	Status remove_table();
 
 	std::size_t file_size();
+	unsigned int bucket_size() { return (FIELD_WIDTH + 1) * 2 + 2; }
 
 	static unsigned int hash(std::string);
 
@@ -25,9 +26,8 @@ public:
 	Status put(std::string, std::string);
 
 	unsigned int OFFSET_FROM_HEADER = 10;
-	unsigned int BUCKET_SIZE = 22;
 	unsigned int NUMBER_OF_BUCKETS = 1000;
-	std::size_t FILE_SIZE = NUMBER_OF_BUCKETS * BUCKET_SIZE + OFFSET_FROM_HEADER + 3;
+	unsigned int FIELD_WIDTH = 9;
 
 private:
 	std::string db_path;

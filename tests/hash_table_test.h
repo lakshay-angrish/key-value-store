@@ -6,7 +6,7 @@ TEST(HashTable, open_close) {
 	Status s = h.create("test_table.dat");
 	ASSERT_TRUE(s) << s.to_string();
 
-	EXPECT_EQ(h.FILE_SIZE, h.file_size());
+	EXPECT_EQ(13 + h.NUMBER_OF_BUCKETS * h.bucket_size(), h.file_size());
 
 	s = h.remove_table();
 	ASSERT_TRUE(s) << s.to_string();
@@ -26,7 +26,7 @@ TEST(HashTable, put_get) {
 	{
 		Status s = h.put("abc", "123");
 		ASSERT_TRUE(s) << s.to_string();
-		EXPECT_EQ(h.FILE_SIZE, h.file_size());
+		EXPECT_EQ(13 + h.NUMBER_OF_BUCKETS * h.bucket_size(), h.file_size());
 
 		s = h.put("abc", "124");
 		ASSERT_TRUE(!s);
@@ -42,7 +42,7 @@ TEST(HashTable, put_get) {
 
 		s = h.put("6666666", "abcd");
 		ASSERT_TRUE(s) << s.to_string();
-		EXPECT_EQ(h.FILE_SIZE, h.file_size());
+		EXPECT_EQ(13 + h.NUMBER_OF_BUCKETS * h.bucket_size(), h.file_size());
 	}
 
 	{
