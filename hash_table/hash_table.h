@@ -22,6 +22,11 @@ public:
 
 	Status initialize_new_db();
 
+	std::size_t find_slot(std::string);
+	bool is_slot_occupied(std::size_t);
+	std::string get_key_from_slot(std::size_t);
+	std::string get_value_from_slot(std::size_t);
+
 	Status get(std::string, std::string*);
 	Status put(std::string, std::string);
 

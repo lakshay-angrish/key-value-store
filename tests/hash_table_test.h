@@ -34,11 +34,11 @@ TEST(HashTable, put_get) {
 
 		s = h.put("1234567890", "abc");
 		ASSERT_TRUE(!s);
-		EXPECT_EQ("Error: ERROR - Key/Value Size Must be <= 10.", s.to_string());
+		EXPECT_EQ("Error: ERROR - Key/Value Size Must be <= 9.", s.to_string());
 
 		s = h.put("a", "1234567890");
 		ASSERT_TRUE(!s);
-		EXPECT_EQ("Error: ERROR - Key/Value Size Must be <= 10.", s.to_string());
+		EXPECT_EQ("Error: ERROR - Key/Value Size Must be <= 9.", s.to_string());
 
 		s = h.put("6666666", "abcd");
 		ASSERT_TRUE(s) << s.to_string();

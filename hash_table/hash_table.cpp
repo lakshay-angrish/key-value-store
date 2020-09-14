@@ -95,23 +95,51 @@ unsigned int HashTable::hash(std::string key) {
 	return h;
 }
 
+std::size_t HashTable::find_slot(std::string key) {
+	int bucket_number = HashTable::hash(key) % NUMBER_OF_BUCKETS;
+	return OFFSET_FROM_HEADER + bucket_number * bucket_size();
+}
+
+bool HashTable::is_slot_occupied(std::size_t slot) {
+	file.seekg(slot, std::ios::beg);
+
+	char bucket_flag;
+	file.get(bucket_flag);
+
+	return bucket_flag == '1';
+}
+
+std::string HashTable::get_key_from_slot(std::size_t slot) {
+	file.seekg(slot + 2, std::ios::beg);
+
+	std::string key;
+	std::getline(file, key);			//read the key
+
+	int end = std::find(key.begin(), key.end(), ' ') - key.begin();
+	return key.substr(0, end);
+}
+
+std::string HashTable::get_value_from_slot(std::size_t slot) {
+	file.seekg(slot + 12, std::ios::beg);
+
+	std::string value;
+	std::getline(file, value);		//read the value
+
+	int end = std::find(value.begin(), value.end(), ' ') - value.begin();
+	return value.substr(0, end);
+}
+
 Status HashTable::put(std::string key, std::string value) {
 	if (!file.is_open())
 		return Status::Error("DB not opened.");
 
 	if (key.size() > FIELD_WIDTH || value.size() > FIELD_WIDTH)
-		return Status::Error("Key/Value Size Must be <= 10.");
+		return Status::Error("Key/Value Size Must be <= " + std::to_string(FIELD_WIDTH) + ".");
 
 	try {
-		int bucket_allotted = HashTable::hash(key) % NUMBER_OF_BUCKETS;
-		int position_in_file = OFFSET_FROM_HEADER + bucket_allotted * bucket_size();
+		std::size_t slot = find_slot(key);
 
-		file.seekg(position_in_file, std::ios::beg);
-
-		char bucket_flag;
-		file.get(bucket_flag);
-
-		if (bucket_flag == '1')
+		if (is_slot_occupied(slot))
 			return Status::Error("Bucket Full");
 
 		file.seekg(-1, std::ios::cur);
@@ -135,40 +163,24 @@ Status HashTable::get(std::string key, std::string* value) {
 		return Status::Error("DB not opened.");
 
 	if (key.size() > FIELD_WIDTH)
-		return Status::Error("Key/Value Size Must be <= " + std::to_string(FIELD_WIDTH + 1) + ".");
+		return Status::Error("Key/Value Size Must be <= " + std::to_string(FIELD_WIDTH) + ".");
 
 	try {
-		int bucket_allotted = HashTable::hash(key) % NUMBER_OF_BUCKETS;
-		int position_in_file = OFFSET_FROM_HEADER + bucket_allotted * bucket_size();
+		std::size_t slot = find_slot(key);
 
-		file.seekg(position_in_file, std::ios::beg);
-
-		char bucket_flag;
-		file.get(bucket_flag);
-
-		if (bucket_flag == '0') {
-			*value = "";
-			return Status::OK();					//key not in table
+		if (!is_slot_occupied(slot)) {
+			value->clear();
+			return Status::OK();
 		}
 
-		file.seekg(1, std::ios::cur);
-
-		std::string key_in_bucket;
-		std::getline(file, key_in_bucket);			//read the key
-
-		int end = std::find(key_in_bucket.begin(), key_in_bucket.end(), ' ') - key_in_bucket.begin();
-		key_in_bucket = key_in_bucket.substr(0, end);
+		std::string key_in_bucket = get_key_from_slot(slot);
 
 		if (key != key_in_bucket) {
 			*value = "";
 			return Status::OK();
 		}
 
-		std::string value_in_bucket;
-		std::getline(file, value_in_bucket);		//read the value
-
-		end = std::find(value_in_bucket.begin(), value_in_bucket.end(), ' ') - value_in_bucket.begin();
-		*value = value_in_bucket.substr(0, end);
+		*value = get_value_from_slot(slot);
 
 	} catch (std::exception e) {
 		return Status::Error(e.what());
