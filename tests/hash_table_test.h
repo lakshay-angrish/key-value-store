@@ -3,10 +3,10 @@
 
 TEST(HashTable, open_close) {
 	HashTable h;
-	Status s = h.create("test_table.dat");
+	Status s = h.create("test_table.dat", 5000);
 	ASSERT_TRUE(s) << s.to_string();
 
-	EXPECT_EQ(13 + h.NUMBER_OF_BUCKETS * h.bucket_size(), h.file_size());
+	EXPECT_EQ(h.OFFSET_FROM_HEADER + h.NUMBER_OF_BUCKETS * h.bucket_size(), h.file_size());
 
 	s = h.remove_table();
 	ASSERT_TRUE(s) << s.to_string();
@@ -21,16 +21,24 @@ TEST(HashTable, hash_function) {
 
 TEST(HashTable, put_get) {
 	HashTable h;
-	h.create("test_table.dat");
+	h.create("test_table.dat", 5);
 
 	{
 		Status s = h.put("abc", "123");
 		ASSERT_TRUE(s) << s.to_string();
-		EXPECT_EQ(13 + h.NUMBER_OF_BUCKETS * h.bucket_size(), h.file_size());
+		EXPECT_EQ(h.OFFSET_FROM_HEADER + h.NUMBER_OF_BUCKETS * h.bucket_size(), h.file_size());
 
-		s = h.put("abc", "124");
-		ASSERT_TRUE(!s);
-		EXPECT_EQ("Error: ERROR - Bucket Full", s.to_string());
+		s = h.put("def", "456");
+		ASSERT_TRUE(s);
+
+		s = h.put("abcde", "789");
+		ASSERT_TRUE(s);
+
+		s = h.put("abcdefg", "000");
+		ASSERT_TRUE(s);
+
+		s = h.put("abcdefghi", "0001");
+		ASSERT_TRUE(s);
 
 		s = h.put("1234567890", "abc");
 		ASSERT_TRUE(!s);
@@ -39,10 +47,6 @@ TEST(HashTable, put_get) {
 		s = h.put("a", "1234567890");
 		ASSERT_TRUE(!s);
 		EXPECT_EQ("Error: ERROR - Key/Value Size Must be <= 9.", s.to_string());
-
-		s = h.put("6666666", "abcd");
-		ASSERT_TRUE(s) << s.to_string();
-		EXPECT_EQ(13 + h.NUMBER_OF_BUCKETS * h.bucket_size(), h.file_size());
 	}
 
 	{
@@ -51,12 +55,24 @@ TEST(HashTable, put_get) {
 		ASSERT_TRUE(s) << s.to_string();
 		EXPECT_EQ("123", value);
 
-		s = h.get("6666666", &value);
+		s = h.get("def", &value);
 		ASSERT_TRUE(s) << s.to_string();
-		EXPECT_EQ("abcd", value);
+		EXPECT_EQ("456", value);
+
+		s = h.get("abcde", &value);
+		ASSERT_TRUE(s) << s.to_string();
+		EXPECT_EQ("789", value);
+
+		s = h.get("abcdefg", &value);
+		ASSERT_TRUE(s) << s.to_string();
+		EXPECT_EQ("000", value);
+
+		s = h.get("abcdefghi", &value);
+		ASSERT_TRUE(s) << s.to_string();
+		EXPECT_EQ("0001", value);
 
 		s = h.get("69", &value);
-		ASSERT_TRUE(s) << s.to_string();
+		ASSERT_TRUE(!s) << s.to_string();
 		EXPECT_EQ("", value);
 	}
 

@@ -36,7 +36,7 @@ TEST(HashDB, get) {
 	{
 		std::string value;
 		Status s = db.get("GOW", &value);
-		ASSERT_TRUE(s);
+		ASSERT_TRUE(!s);
 		EXPECT_EQ("", value);
 	}
 
@@ -49,5 +49,48 @@ TEST(HashDB, get) {
 		ASSERT_TRUE(!s);
 		EXPECT_EQ("Error: ERROR - DB not opened.", s.to_string());
 	}
+	std::remove("test_db.dat");
+}
+
+TEST(HashDB, stress_test) {
+	HashDB db;
+	std::size_t size = 100000;
+	db.open("test_db.dat", size);
+
+	std::string key = "aaaaa";
+	std::string::size_type i;
+	while (size--) {
+		Status s = db.put(key, key);
+		ASSERT_TRUE(s) << s.to_string();
+
+		i = 4;
+		while (i != -1) {
+			if (key[i] == 'z')	key[i--] = 'a';
+			else {
+				key[i]++;
+				break;
+			}
+		}
+	}
+
+	size = 100000;
+	key = "aaaaa";
+	std::string val;
+	while (size--) {
+		Status s = db.get(key, &val);
+		ASSERT_TRUE(s) << s.to_string();
+		EXPECT_EQ(val, key);
+
+		i = 4;
+		while (i != -1) {
+			if (key[i] == 'z')	key[i--] = 'a';
+			else {
+				key[i]++;
+				break;
+			}
+		}
+	}
+
+	db.close();
 	std::remove("test_db.dat");
 }

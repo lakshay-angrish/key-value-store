@@ -11,7 +11,7 @@ class HashTable {
 public:
 	HashTable(): file(NULL) {}
 
-	Status create(std::string);
+	Status create(std::string, std::size_t);
 	Status close();
 	Status remove_table();
 
@@ -31,7 +31,7 @@ public:
 	Status put(std::string, std::string);
 
 	unsigned int OFFSET_FROM_HEADER = 10;
-	unsigned int NUMBER_OF_BUCKETS = 1000;
+	unsigned int NUMBER_OF_BUCKETS = 5;
 	unsigned int FIELD_WIDTH = 9;
 
 private:
